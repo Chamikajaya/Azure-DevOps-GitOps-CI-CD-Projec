@@ -1,0 +1,49 @@
+trigger:
+  paths:
+    include:
+      - vote/**
+
+resources:
+  - repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: "591d3c7e-29aa-4c63-8001-06319ef2e914"
+  imageRepository: "voteService"
+  containerRegistry: "votingappregistry.azurecr.io"
+  dockerfilePath: "$(Build.SourcesDirectory)/vote/Dockerfile"
+  tag: "$(Build.BuildId)"
+
+# Running the pipeline on self hosted VM
+pool:
+  name: "MyAzureAgentPool"
+
+stages:
+  - stage: Build
+    displayName: Build
+    jobs:
+      - job: Build
+        displayName: Build Docker Image
+        steps:
+          - task: Docker@2
+            displayName: Build Docker image
+            inputs:
+              containerRegistry: "$(dockerRegistryServiceConnection)"
+              repository: "$(imageRepository)"
+              command: "build"
+              Dockerfile: "vote/Dockerfile"
+              tags: "$(tag)"
+
+  - stage: Push
+    displayName: Push to ACR
+    jobs:
+      - job: Build
+        displayName: Push to ACR
+        steps:
+          - task: Docker@2
+            displayName: Push Docker image
+            inputs:
+              containerRegistry: "$(dockerRegistryServiceConnection)" # since using ACR no need to login, if using DockerHub needs to log-in first
+              repository: "$(imageRepository)"
+              command: "push"
+              tags: "$(tag)"
