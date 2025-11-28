@@ -11,7 +11,7 @@ variables:
   dockerRegistryServiceConnection: "591d3c7e-29aa-4c63-8001-06319ef2e914"
   imageRepository: "workerService"
   containerRegistry: "votingappregistry.azurecr.io"
-  dockerfilePath: "$(Build.SourcesDirectory)/vote/Dockerfile"
+  dockerfilePath: "$(Build.SourcesDirectory)/worker/Dockerfile"
   tag: "$(Build.BuildId)"
 
 # Running the pipeline on self hosted VM
@@ -37,7 +37,7 @@ stages:
   - stage: Push
     displayName: Push to ACR
     jobs:
-      - job: Build
+      - job: Push
         displayName: Push to ACR
         steps:
           - task: Docker@2

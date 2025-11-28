@@ -37,7 +37,7 @@ stages:
   - stage: Push
     displayName: Push to ACR
     jobs:
-      - job: Build
+      - job: Push
         displayName: Push to ACR
         steps:
           - task: Docker@2
